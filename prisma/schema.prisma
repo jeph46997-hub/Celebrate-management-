@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("user")
+  bookings  Booking[]
+  createdAt DateTime @default(now())
+}
+
+model Celebrity {
+  id        String   @id @default(uuid())
+  name      String
+  image     String
+  bio       String
+  services  Service[]
+  createdAt DateTime @default(now())
+}
+
+model Service {
+  id           String   @id @default(uuid())
+  title        String
+  price        Int
+  celebrityId  String
+  celebrity    Celebrity @relation(fields: [celebrityId], references: [id])
+  bookings     Booking[]
+  createdAt    DateTime @default(now())
+}
+
+model Booking {
+  id         String   @id @default(uuid())
+  userId     String
+  serviceId  String
+  status     String   @default("pending")
+  user       User     @relation(fields: [userId], references: [id])
+  service    Service  @relation(fields: [serviceId], references: [id])
+  createdAt  DateTime @default(now())
+}
+
+model GiftCard {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  balance   Int
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
